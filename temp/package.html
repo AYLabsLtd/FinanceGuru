@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>Shipping Package</title>
+  <style>
+    /* Basic reset */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f5f7fa; /* same background color as other pages */
+      color: #333;         /* same text color as other pages */
+      margin: 0;
+      padding: 0;
+    }
+
+    /* ---------- NAV BAR STYLES (same as other pages) ---------- */
+    .navbar {
+      display: flex;
+      align-items: center;
+      background-color: #005a9c;
+      padding: 10px 10px;
+    }
+    .navbar img.logo {
+      height: 50px;
+      width: auto;
+      margin-right: 20px;
+    }
+    .navbar a {
+      color: #fff;
+      text-decoration: none;
+      margin-right: 20px;
+      font-weight: 600;
+      font-size: 16px;
+      transition: opacity 0.3s ease;
+    }
+    .navbar a:hover {
+      opacity: 0.8;
+    }
+    .navbar a.active {
+      text-decoration: underline;
+    }
+
+    /* ---------- MAIN CONTENT AREA ---------- */
+    .package-wrapper {
+      background: linear-gradient(120deg, #f5f7fa, #ffffff);
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+    .package-container {
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 40px 30px;
+    }
+    h1 {
+      text-align: center;
+      color: #005a9c; /* same color as the navbar for consistency */
+      margin-bottom: 20px;
+      font-size: 2rem;
+    }
+    h1::after {
+      content: "";
+      display: block;
+      width: 60px;
+      height: 3px;
+      background: #005a9c;
+      margin: 10px auto 20px;
+      border-radius: 2px;
+    }
+
+    /* ---------- FORM + INPUT STYLES ---------- */
+    form {
+      max-width: 600px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    label {
+      font-weight: 600;
+      display: block;
+      margin-bottom: 5px;
+    }
+    input[type="text"],
+    input[type="date"],
+    input[type="number"] {
+      width: 100%;
+      max-width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    /* Make addresses bigger to indicate multiline possible */
+    textarea {
+      width: 100%;
+      min-height: 60px;
+      padding: 10px;
+      resize: vertical;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-family: inherit;
+    }
+    /* Buttons */
+    .btn-check {
+      background-color: #29a;
+      color: #fff;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 4px;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+    }
+    .btn-check:hover {
+      opacity: 0.9;
+    }
+
+    /* ---------- RESULTS / OUTPUT AREA ---------- */
+    .results-container {
+      margin-top: 30px;
+      text-align: left;
+    }
+    .results-container h2 {
+      color: #005a9c;
+      font-size: 1.4rem;
+      margin-bottom: 10px;
+    }
+    .api-result {
+      background: #fafafa;
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      padding: 15px;
+      margin-bottom: 10px;
+    }
+    .api-result strong {
+      display: inline-block;
+      width: 100px;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ---------- NAV BAR ---------- -->
+  <div class="navbar">
+    <!-- Logo -->
+    <img src="imgs/logo.png" alt="My Logo" class="logo"/>
+    <!-- Navigation Links -->
+    <a href="index.html">Home</a>
+    <a href="mortgage.html">Home Mortgage Calculator</a>
+    <a href="sip.html">Systematic Investment Plan</a>
+    <a href="carloan.html">Car Loan Calculator</a>
+    <a href="package.html" class="active">Shipping Package</a>
+  </div>
+
+  <!-- ---------- MAIN WRAPPER ---------- -->
+  <div class="package-wrapper">
+    <div class="package-container">
+      <h1>Check Parcel Shipping Costs</h1>
+
+      <form id="shippingForm">
+        <!-- 1) Sender Address (multiline) -->
+        <div>
+          <label for="senderAddress">Sender Address</label>
+          <textarea id="senderAddress" placeholder="Enter Sender's Address" required></textarea>
+        </div>
+
+        <!-- 2) Destination Address (multiline) -->
+        <div>
+          <label for="destinationAddress">Destination Address</label>
+          <textarea id="destinationAddress" placeholder="Enter Destination Address" required></textarea>
+        </div>
+
+        <!-- 3) Shipping Date -->
+        <div>
+          <label for="shippingDate">Shipping Date</label>
+          <input type="date" id="shippingDate" required />
+        </div>
+
+        <!-- 4) Weight in Kilograms -->
+        <div>
+          <label for="weightKg">Weight (kg)</label>
+          <input type="number" id="weightKg" step="0.01" placeholder="e.g. 2.50" required />
+        </div>
+
+        <button type="button" class="btn-check" onclick="checkShippingPrices()">Check Prices</button>
+      </form>
+
+      <!-- Results will show up here -->
+      <div class="results-container" id="resultsArea" style="display:none;">
+        <h2>Available Shipping Options:</h2>
+        <div id="apiResults"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    /**
+     * checkShippingPrices():
+     *  - Collects the 4 input fields (sender address, destination address, shipping date, weight).
+     *  - Calls multiple shipping APIs (Canada Post, FedEx, Purolator, UPS, USPS).
+     *  - Displays the prices or messages.
+     *
+     * NOTE: In a REAL scenario, you need actual API endpoints, credentials, etc.
+     *       This is just a placeholder to show how you'd structure the code.
+     */
+    async function checkShippingPrices() {
+      // 1) Collect form values
+      const sender = document.getElementById('senderAddress').value.trim();
+      const destination = document.getElementById('destinationAddress').value.trim();
+      const shipDate = document.getElementById('shippingDate').value;
+      const weight = parseFloat(document.getElementById('weightKg').value);
+      const today = new Date().toISOString().split('T')[0];  
+
+      console.log(today);
+    // Restrict calendar to only let user pick dates greater than or equal to today.  
+    // document.addEventListener("DOMContentLoaded", function() {
+    //   const shippingDate = document.getElementById('shippingDate');
+    //   const today = new Date().toISOString().split('T')[0]; 
+    //   shippingDate.setAttribute('min', today);
+    //  });
+
+      // Basic validation
+      if (!sender || !destination || !shipDate || isNaN(weight) || weight <= 0 || shipDate < today) {
+        alert('Please fill all fields correctly.');
+        return;
+      }
+
+      // Display the results container
+      document.getElementById('resultsArea').style.display = 'block';
+      const apiResultsDiv = document.getElementById('apiResults');
+      apiResultsDiv.innerHTML = ''; // clear previous results
+
+      // For each carrier, we can do a "fake" API call or real fetch if you have endpoints/keys
+      // We'll just simulate with placeholders:
+      const carriers = [
+        { name: 'Canada Post', endpoint: 'https://api.canadapost.com/' },
+        { name: 'FedEx', endpoint: 'https://api.fedex.com/' },
+        { name: 'Purolator', endpoint: 'https://api.purolator.com/' },
+        { name: 'UPS', endpoint: 'https://api.ups.com/' },
+        { name: 'USPS', endpoint: 'https://api.usps.com/' },
+      ];
+
+      for (let carrier of carriers) {
+        // *** In real life, you'd do something like:
+        // const response = await fetch(carrier.endpoint + '/shippingRates', {
+        //   method: 'POST' or 'GET',
+        //   headers: { 'Authorization': 'Bearer <API_KEY>' },
+        //   body: JSON.stringify({ sender, destination, shipDate, weight })
+        // });
+        // const data = await response.json();
+        // ...
+        // For now, let's simulate:
+        const data = simulateCarrierResponse(carrier.name, weight);
+
+        // Build result markup
+        const resultHTML = `
+          <div class="api-result">
+            <strong>Carrier:</strong> ${carrier.name}<br>
+            <strong>Price:</strong> $${data.price.toFixed(2)}<br>
+            <strong>ETA:</strong> ${data.eta} days
+          </div>
+        `;
+        apiResultsDiv.insertAdjacentHTML('beforeend', resultHTML);
+      }
+    }
+
+    /**
+     * Simulates a shipping price response from a carrier:
+     *   - Just returns random price & ETA (days).
+     *   - In a real scenario, you would parse the actual response from fetch().
+     */
+    function simulateCarrierResponse(carrierName, weight) {
+      // Some random logic to produce a "fake" price
+      // e.g. baseRate + (weight * ratePerKg)
+      let baseRate = 5 + (Math.random() * 5);       // random 5-10 as a base
+      let ratePerKg = 3 + (Math.random() * 2);      // random 3-5 per kg
+      let price = baseRate + (weight * ratePerKg);
+
+      // random 2-7 days for ETA
+      let eta = Math.floor(Math.random() * 6) + 2;
+      return { price, eta };
+    }
+  </script>
+</body>
+</html>

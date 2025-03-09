@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>Mortgage Calculator</title>
+  <style>
+    /* Basic reset */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f5f7fa;
+      color: #333;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* ---------- NAV BAR STYLES ---------- */
+    .navbar {
+      display: flex;
+      align-items: center;
+      background-color: #005a9c;
+      padding: 10px 10px;
+    }
+    /* Logo on the left */
+    .navbar img.logo {
+      height: 50px;
+      width: auto;
+      margin-right: 20px;
+    }
+    /* Nav Links */
+    .navbar a {
+      color: #fff;
+      text-decoration: none;
+      margin-right: 20px;
+      font-weight: 600;
+      font-size: 16px;
+    }
+    .navbar a:hover {
+      text-decoration: underline;
+    }
+    /* Active tab underlined or styled differently */
+    .navbar a.active {
+      text-decoration: underline;
+    }
+
+    /* ---------- FINANCIAL PAGE CONTENT ---------- */
+    .financial-container {
+      width: 100%;
+      margin: 0;
+      background: #fff;
+      padding: 20px 30px;
+      border-radius: 8px;
+    }
+    .financial-container h1, 
+    .financial-container h2 {
+      text-align: center;
+    }
+    .financial-container h1 {
+      margin-bottom: 10px;
+    }
+    .financial-container h2 {
+      margin-top: 5px;
+      margin-bottom: 40px;
+      color: #005a9c;
+    }
+
+    /* Section & Field Styles */
+    .financial-section {
+      border: 1px solid #e0e0e0;
+      padding: 20px;
+      margin-bottom: 30px;
+      border-radius: 8px;
+      background: #fafafa;
+    }
+    label {
+      display: inline-block;
+      width: 220px;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+    input, select {
+      padding: 6px 8px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    /* Numeric fields narrower, plus range sliders */
+    input[type="number"] {
+      width: 150px;
+      text-align: right;
+    }
+    input[type="range"] {
+      width: 180px;
+      margin-left: 10px;
+      vertical-align: middle;
+    }
+
+    /* Button Styles */
+    button {
+      padding: 8px 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 600;
+      margin-top: 10px;
+    }
+    .calculate-btn {
+      background-color: #29a;
+      color: #fff;
+    }
+    .reset-btn {
+      background-color: #e77;
+      margin-left: 10px;
+      color: #fff;
+    }
+    .reset-all-btn {
+      background-color: #e77;
+      color: #fff;
+      margin-left: 10px;
+    }
+    .submit-btn {
+      background-color: #29a;
+      color: #fff;
+      margin-bottom: 20px;
+    }
+    
+    /* Layout for Calculation Sections */
+    .calc-wrapper {
+      display: flex;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+    .inputs-container, .output-container {
+      flex: 1;
+      min-width: 280px;
+    }
+    .output-container {
+      text-align: right;
+      padding-left: 20px;
+    }
+    .result {
+      margin-top: 10px;
+      font-weight: bold;
+      color: #2c7;
+    }
+
+    /* Top Section for moneyAtHand, downPayment, lumpsum, etc. */
+    .top-section div {
+      margin-bottom: 10px;
+    }
+
+    /* Column layout for moneyAtHand, downPayment, lumpsum, etc.*/
+    .triangle-container {
+        flex-direction: column;
+      }
+  </style>
+</head>
+<body>
+
+  <!-- NAV BAR -->
+  <div class="navbar">
+    <!-- Logo -->
+    <img src="imgs/logo.png" alt="My Logo" class="logo"/>
+    <!-- Navigation Links -->
+    <a href="index.html">Home</a>
+    <a href="mortgage.html" class="active">Home Mortgage Calculator</a>
+    <a href="sip.html">Systematic Investment Plan</a>
+    <a href="carloan.html">Car Loan Calculator</a>
+    <a href="package.html">Shipping Package</a>
+  </div>
+
+  <!-- MAIN FINANCIAL CONTENT WRAPPER -->
+  <div class="financial-container">
+    <h1>Home Mortgage Calculator</h1>
+
+    <!-- ==================== TOP SECTION (Inputs) ==================== -->
+    <div class="top-section">
+      <div>
+        <label for="moneyAtHand">Money at hand</label>
+        <input type="number" id="moneyAtHand" placeholder="e.g. 100000" oninput="updateLumpsumField()" />
+      </div>
+      <div>
+        <label for="downPaymentOptional">Money for Down Payment (Optional)</label>
+        <input type="number" id="downPaymentOptional" placeholder="e.g. 20000"
+               oninput="updateDownPaymentPctState(); updateLumpsumField()" />
+      </div>
+      <div>
+        <label for="useRestAsLumpSumSip">Use rest as Lump Sum SIP?</label>
+        <select id="useRestAsLumpSumSip" onchange="updateLumpsumField()">
+          <option value="No">No</option>
+          <option value="Yes">Yes</option>
+        </select>
+      </div>
+      <!-- New fields for Car Down Payment -->
+      <div>
+        <label for="downPaymentForCar">Down payment for car</label>
+        <input type="number" id="downPaymentForCar" placeholder="e.g. 5000" oninput="updateCarDownPaymentState()" />
+      </div>
+      <div>
+        <label for="useRestAsCarDownPayment">Use rest as car down payment?</label>
+        <select id="useRestAsCarDownPayment" onchange="updateCarDownPaymentState()">
+          <option value="No">No</option>
+          <option value="Yes">Yes</option>
+        </select>
+      </div>
+      <!-- Submit & Reset All -->
+      <button class="submit-btn" onclick="submitTopInputs()">Submit</button>
+      <button class="reset-all-btn" onclick="resetAll()">Reset All</button>
+    </div>
+
+    <!-- ==================== HOUSING SECTION ==================== -->
+    <section class="financial-section" id="housing-section">
+
+      <div class="calc-wrapper">
+        <!-- Inputs -->
+        <div class="inputs-container">
+          <!-- House Cost -->
+          <div>
+            <label for="houseCost">House Cost</label>
+            <input type="number" id="houseCost" placeholder="e.g. 5000000" />
+          </div>
+
+          <!-- Down Payment % + Slider -->
+          <div>
+            <label for="housePct">Down Payment %</label>
+            <input type="number" id="housePct" placeholder="e.g. 20"
+                   oninput="syncSliderPercent('housePctSlider','housePct')" />
+            <input type="range" id="housePctSlider" min="0" max="100" step="0.01"
+                   oninput="syncInputPercent('housePctSlider','housePct')" />
+          </div>
+
+          <!-- Annual Interest % + Slider -->
+          <div>
+            <label for="annualInterest">Interest Rate (Annual %)</label>
+            <input type="number" step="0.01" id="annualInterest" placeholder="e.g. 7.5"
+                   oninput="syncSliderPercent('annualInterestSlider','annualInterest')" />
+            <input type="range" id="annualInterestSlider" min="0" max="100" step="0.01"
+                   oninput="syncInputPercent('annualInterestSlider','annualInterest')" />
+          </div>
+
+          <!-- Amortization Period (Years) + Slider (1-100) -->
+          <div>
+            <label for="amortYears">Amortization Period (Years)</label>
+            <input type="number" id="amortYears" placeholder="e.g. 20"
+                   oninput="syncSliderYears('amortYearsSlider','amortYears')" />
+            <input type="range" id="amortYearsSlider" min="1" max="100" step="1"
+                   oninput="syncInputYears('amortYearsSlider','amortYears')" />
+          </div>
+          
+          <button class="calculate-btn" onclick="calculateHousing()">Calculate Housing</button>
+          <button class="reset-btn" onclick="resetHousing()">Reset</button>
+        </div>
+
+        <!-- Output -->
+        <div class="output-container">
+          <div class="result" id="housingResult"></div>
+        </div>
+      </div>
+    </section>
+
+  <!-- Disclaimer at the bottom -->
+  <div class="disclaimer" style="width: 60%; margin: 20px auto; text-align: center;">
+    <strong>Advisory Note:</strong> This Website is for <em>testing purposes only</em>
+    and should not be used for actual, real-life mortgage or SIP decisions.
+    The results are purely illustrative and may not account for all factors
+    relevant to your personal financial situation.
+  </div>
+
+  <!-- ========== SCRIPTS FOR SYNC + CALCULATIONS ========== -->
+  <script>
+    // ============================================================== 
+    //  HELPERS TO SYNC SLIDER AND INPUT FOR PERCENT & YEAR FIELDS 
+    // ==============================================================
+
+    // 1) PERCENTAGE FIELDS (0-100, step=0.01)
+    function syncInputPercent(sliderId, inputId) {
+      const slider = document.getElementById(sliderId);
+      const inputBox = document.getElementById(inputId);
+      inputBox.value = slider.value;
+    }
+    function syncSliderPercent(sliderId, inputId) {
+      const slider = document.getElementById(sliderId);
+      const inputBox = document.getElementById(inputId);
+      let val = parseFloat(inputBox.value);
+      if (isNaN(val)) { val = 0; }
+      if (val < 0) { val = 0; }
+      if (val > 100) { val = 100; }
+      inputBox.value = val;
+      slider.value = val;
+    }
+
+    // 2) YEAR FIELDS (1-100, step=1)
+    function syncInputYears(sliderId, inputId) {
+      const slider = document.getElementById(sliderId);
+      const inputBox = document.getElementById(inputId);
+      inputBox.value = slider.value;
+    }
+    function syncSliderYears(sliderId, inputId) {
+      const slider = document.getElementById(sliderId);
+      const inputBox = document.getElementById(inputId);
+      let val = parseInt(inputBox.value, 10);
+      if (isNaN(val) || val < 1) {
+        val = 1;
+      }
+      if (val > 100) {
+        val = 100;
+      }
+      inputBox.value = val;
+      slider.value = val;
+    }
+
+    // ============================================================== 
+    // (A) Update the Down Payment % field if user sets a manual down payment (for housing)
+    // ==============================================================
+    function updateDownPaymentPctState() {
+      const downPaymentOpt = parseFloat(document.getElementById('downPaymentOptional').value);
+      const housePctField = document.getElementById('housePct');
+      const housePctSlider = document.getElementById('housePctSlider');
+      if (!isNaN(downPaymentOpt) && downPaymentOpt > 0) {
+        housePctField.disabled = true;
+        housePctSlider.disabled = true;
+      } else {
+        housePctField.disabled = false;
+        housePctSlider.disabled = false;
+      }
+    }
+
+    // ============================================================== 
+    // (D) "Submit" top inputs: (currently just an alert)
+    // ==============================================================
+    function submitTopInputs() {
+      alert("Top inputs submitted. Fields are now locked.");
+    }
+
+    // ============================================================== 
+    // 1. HOUSING CALCULATION
+    // ==============================================================
+    function calculateHousing() {
+      const houseCost = parseFloat(document.getElementById('houseCost').value) || 0;
+      const housePct = parseFloat(document.getElementById('housePct').value) || 0;
+      const annualInterest = parseFloat(document.getElementById('annualInterest').value) || 0;
+      const amortYears = parseFloat(document.getElementById('amortYears').value) || 0;
+      const moneyForDownPayment = parseFloat(document.getElementById('downPaymentOptional').value) || 0;
+      
+      // Use manual down payment if provided; otherwise use the percentage.
+      let downPayment = (moneyForDownPayment > 0) 
+                        ? moneyForDownPayment 
+                        : houseCost * (housePct / 100);
+
+      const loanAmount = houseCost - downPayment;
+      const monthlyInterest = annualInterest / 100 / 12;
+      const totalMonths = amortYears * 12;
+      let monthlyMortgage = 0;
+      if (monthlyInterest > 0) {
+        monthlyMortgage = 
+          loanAmount * (monthlyInterest * Math.pow(1 + monthlyInterest, totalMonths)) / 
+          (Math.pow(1 + monthlyInterest, totalMonths) - 1);
+      } else {
+        monthlyMortgage = loanAmount / totalMonths;
+      }
+      const overallMortgage = monthlyMortgage * totalMonths;
+      const overpaid = overallMortgage - loanAmount;
+      const overpaidByMonth = overpaid / totalMonths;
+
+      const resultText = `
+        <div>Down Payment: ${downPayment.toFixed(2)}</div>
+        <div>Loan Amount: ${loanAmount.toFixed(2)}</div>
+        <div>Monthly Mortgage: ${monthlyMortgage.toFixed(2)}</div>
+        <div>Overall Mortgage: ${overallMortgage.toFixed(2)}</div>
+        <div>Total Interest (Overpaid): ${overpaid.toFixed(2)}</div>
+        <div>Interest per Month: ${overpaidByMonth.toFixed(2)}</div>
+      `;
+      document.getElementById('housingResult').innerHTML = resultText;
+    }
+
+    localStorage.setItem('housePrice',houseCost);
+    localStorage.setItem('housePercent',housePct);
+
+    function resetHousing() {
+      document.getElementById('houseCost').value = '';
+      document.getElementById('housePct').value = '';
+      document.getElementById('housePctSlider').value = 0;
+      document.getElementById('housePct').disabled = false;
+      document.getElementById('housePctSlider').disabled = false;
+      document.getElementById('annualInterest').value = '';
+      document.getElementById('annualInterestSlider').value = 0;
+      document.getElementById('amortYears').value = '';
+      document.getElementById('amortYearsSlider').value = 1;
+      document.getElementById('housingResult').innerHTML = '';
+      updateDownPaymentPctState();
+    } 
+
+    // ============================================================== 
+    // RESET ALL: re-enable top fields and clear all inputs/results.
+    // ==============================================================
+    function resetAll() {
+      document.getElementById('moneyAtHand').value = '';
+      document.getElementById('moneyAtHand').disabled = false;
+      document.getElementById('downPaymentOptional').value = '';
+      document.getElementById('downPaymentOptional').disabled = false;
+      document.getElementById('useRestAsLumpSumSip').value = 'No';
+      document.getElementById('useRestAsLumpSumSip').disabled = false;
+      
+      resetHousing();
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5739036219263079"
+     crossorigin="anonymous">
+  </script>
+  <meta charset="utf-8" name="google-adsense-account" content="ca-pub-5739036219263079"/>
+  <title>Financial Calculations</title>
+  <style>
+    /* Basic reset */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f5f7fa;
+      color: #333;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* ---------- NAV BAR STYLES ---------- */
+    .navbar {
+      display: flex;
+      align-items: center;
+      background-color: #005a9c;
+      padding: 10px 10px;
+    }
+    /* Logo on the left */
+    .navbar img.logo {
+      height: 50px;
+      width: auto;
+      margin-right: 20px;
+    }
+    /* Nav Links */
+    .navbar a {
+      color: #fff;
+      text-decoration: none;
+      margin-right: 20px;
+      font-weight: 600;
+      font-size: 16px;
+    }
+    .navbar a:hover {
+      text-decoration: underline;
+    }
+    /* Active tab underlined or styled differently */
+    .navbar a.active {
+      text-decoration: underline;
+    }
+
+    /* ---------- FINANCIAL PAGE CONTENT ---------- */
+    .financial-container {
+      width: 100%;
+      margin: 0;
+      background: #fff;
+      padding: 20px 30px;
+      border-radius: 8px;
+    }
+    .financial-container h1, 
+    .financial-container h2 {
+      text-align: center;
+    }
+    .financial-container h1 {
+      margin-bottom: 10px;
+    }
+    .financial-container h2 {
+      margin-top: 5px;
+      margin-bottom: 40px;
+      color: #005a9c;
+    }
+
+    /* Section & Field Styles */
+    .financial-section {
+      border: 1px solid #e0e0e0;
+      padding: 20px;
+      margin-bottom: 30px;
+      border-radius: 8px;
+      background: #fafafa;
+    }
+    label {
+      display: inline-block;
+      width: 220px;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+    input, select {
+      padding: 6px 8px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    /* Numeric fields narrower, plus range sliders */
+    input[type="number"] {
+      width: 150px;
+      text-align: right;
+    }
+    input[type="range"] {
+      width: 180px;
+      margin-left: 10px;
+      vertical-align: middle;
+    }
+
+    /* Button Styles */
+    button {
+      padding: 8px 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 600;
+      margin-top: 10px;
+    }
+    .calculate-btn {
+      background-color: #29a;
+      color: #fff;
+    }
+    .reset-btn {
+      background-color: #e77;
+      margin-left: 10px;
+      color: #fff;
+    }
+    .reset-all-btn {
+      background-color: #e77;
+      color: #fff;
+      margin-left: 10px;
+    }
+    .submit-btn {
+      background-color: #29a;
+      color: #fff;
+      margin-bottom: 20px;
+    }
+    
+    /* Layout for Calculation Sections */
+    .calc-wrapper {
+      display: flex;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+    .inputs-container, .output-container {
+      flex: 1;
+      min-width: 280px;
+    }
+    .output-container {
+      text-align: right;
+      padding-left: 20px;
+    }
+    .result {
+      margin-top: 10px;
+      font-weight: bold;
+      color: #2c7;
+    }
+
+    /* Top Section for moneyAtHand, downPayment, lumpsum, etc. */
+    .top-section div {
+      margin-bottom: 10px;
+    }
+
+    /* Column layout for moneyAtHand, downPayment, lumpsum, etc.*/
+    .triangle-container {
+        flex-direction: column;
+      }
+  </style>
+</head>
+<body>
+
+  <!-- NAV BAR -->
+  <div class="navbar">
+    <img src="imgs/logo.png" alt="My Logo" class="logo"/>
+    <a href="index.html">Home</a>
+    <a href="calculation.html" class="active">Financial Guru</a>
+    <a href="package.html">Shipping Package</a>
+  </div>
+
+  <!-- MAIN FINANCIAL CONTENT WRAPPER -->
+  <div class="financial-container">
+    <h1>Financial Guru</h1>
+
+    <!-- ==================== TOP SECTION (Inputs) ==================== -->
+    <div class="top-section">
+      <div>
+        <label for="moneyAtHand">Money at hand</label>
+        <input type="number" id="moneyAtHand" placeholder="e.g. 100000" oninput="updateLumpsumField()" />
+      </div>
+      <div>
+        <label for="downPaymentOptional">Money for Down Payment (Optional)</label>
+        <input type="number" id="downPaymentOptional" placeholder="e.g. 20000"
+               oninput="updateDownPaymentPctState(); updateLumpsumField()" />
+      </div>
+      <div>
+        <label for="useRestAsLumpSumSip">Use rest as Lump Sum SIP?</label>
+        <select id="useRestAsLumpSumSip" onchange="updateLumpsumField()">
+          <option value="No">No</option>
+          <option value="Yes">Yes</option>
+        </select>
+      </div>
+      <!-- New fields for Car Down Payment -->
+      <div>
+        <label for="downPaymentForCar">Down payment for car</label>
+        <input type="number" id="downPaymentForCar" placeholder="e.g. 5000" oninput="updateCarDownPaymentState()" />
+      </div>
+      <div>
+        <label for="useRestAsCarDownPayment">Use rest as car down payment?</label>
+        <select id="useRestAsCarDownPayment" onchange="updateCarDownPaymentState()">
+          <option value="No">No</option>
+          <option value="Yes">Yes</option>
+        </select>
+      </div>
+      <!-- Submit & Reset All -->
+      <button class="submit-btn" onclick="submitTopInputs()">Submit</button>
+      <button class="reset-all-btn" onclick="resetAll()">Reset All</button>
+    </div>
+
+    <!-- ==================== HOUSING SECTION ==================== -->
+    <section class="financial-section" id="housing-section">
+      <h2>Mortgage and Housing Calculator</h2>
+      <div class="calc-wrapper">
+        <!-- Inputs -->
+        <div class="inputs-container">
+          <!-- House Cost -->
+          <div>
+            <label for="houseCost">House Cost</label>
+            <input type="number" id="houseCost" placeholder="e.g. 5000000" />
+          </div>
+
+          <!-- Down Payment % + Slider -->
+          <div>
+            <label for="housePct">Down Payment %</label>
+            <input type="number" id="housePct" placeholder="e.g. 20"
+                   oninput="syncSliderPercent('housePctSlider','housePct')" />
+            <input type="range" id="housePctSlider" min="0" max="100" step="0.01"
+                   oninput="syncInputPercent('housePctSlider','housePct')" />
+          </div>
+
+          <!-- Annual Interest % + Slider -->
+          <div>
+            <label for="annualInterest">Interest Rate (Annual %)</label>
+            <input type="number" step="0.01" id="annualInterest" placeholder="e.g. 7.5"
+                   oninput="syncSliderPercent('annualInterestSlider','annualInterest')" />
+            <input type="range" id="annualInterestSlider" min="0" max="100" step="0.01"
+                   oninput="syncInputPercent('annualInterestSlider','annualInterest')" />
+          </div>
+
+          <!-- Amortization Period (Years) + Slider (1-100) -->
+          <div>
+            <label for="amortYears">Amortization Period (Years)</label>
+            <input type="number" id="amortYears" placeholder="e.g. 20"
+                   oninput="syncSliderYears('amortYearsSlider','amortYears')" />
+            <input type="range" id="amortYearsSlider" min="1" max="100" step="1"
+                   oninput="syncInputYears('amortYearsSlider','amortYears')" />
+          </div>
+          
+          <button class="calculate-btn" onclick="calculateHousing()">Calculate Housing</button>
+          <button class="reset-btn" onclick="resetHousing()">Reset</button>
+        </div>
+
+        <!-- Output -->
+        <div class="output-container">
+          <div class="result" id="housingResult"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TRIANGULAR LAYOUT FOR SIP SECTIONS ==================== -->
+    <div class="triangle-container">
+      
+      <!-- =========== SIP LUMP SUM SECTION =========== -->
+      <section class="financial-section" id="sip-lumpsum-section">
+        <h2>SIP Lump Sum (Tax &amp; Inflation)</h2>
+        <div class="calc-wrapper">
+          <!-- Inputs -->
+          <div class="inputs-container">
+            <div>
+              <label for="lumpsum">LumpSum SIP</label>
+              <input type="number" id="lumpsum" placeholder="e.g. 100000" />
+            </div>
+
+            <!-- SIP Term (Years) + Slider (1-100) -->
+            <div>
+              <label for="sipTerm">SIP Term (Years)</label>
+              <input type="number" id="sipTerm" placeholder="e.g. 5"
+                     oninput="syncSliderYears('sipTermSlider','sipTerm')" />
+              <input type="range" id="sipTermSlider" min="1" max="100" step="1"
+                     oninput="syncInputYears('sipTermSlider','sipTerm')" />
+            </div>
+
+            <!-- SIP Interest Rate % + Slider -->
+            <div>
+              <label for="sipInterest">SIP Interest Rate (Annual %)</label>
+              <input type="number" step="0.01" id="sipInterest" placeholder="e.g. 12"
+                     oninput="syncSliderPercent('sipInterestSlider','sipInterest')" />
+              <input type="range" id="sipInterestSlider" min="0" max="100" step="0.01"
+                     oninput="syncInputPercent('sipInterestSlider','sipInterest')" />
+            </div>
+
+            <!-- LTCG Tax % + Slider -->
+            <div>
+              <label for="ltcgTax">Long Term Cap Gains Tax (%)</label>
+              <input type="number" step="0.01" id="ltcgTax" placeholder="e.g. 10"
+                     oninput="syncSliderPercent('ltcgTaxSlider','ltcgTax')" />
+              <input type="range" id="ltcgTaxSlider" min="0" max="100" step="0.01"
+                     oninput="syncInputPercent('ltcgTaxSlider','ltcgTax')" />
+            </div>
+
+            <!-- Inflation % + Slider -->
+            <div>
+              <label for="inflation">Inflation Rate (Annual %)</label>
+              <input type="number" step="0.01" id="inflation" placeholder="e.g. 5"
+                     oninput="syncSliderPercent('inflationSlider','inflation')" />
+              <input type="range" id="inflationSlider" min="0" max="100" step="0.01"
+                     oninput="syncInputPercent('inflationSlider','inflation')" />
+            </div>
+
+            <button class="calculate-btn" onclick="calculateLumpSumSIP()">Calculate LumpSum SIP</button>
+            <button class="reset-btn" onclick="resetLumpSumSIP()">Reset</button>
+          </div>
+
+          <!-- Output -->
+          <div class="output-container">
+            <div class="result" id="lumpsumResult"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =========== MONTHLY SIP SECTION =========== -->
+      <section class="financial-section" id="monthly-sip-section">
+        <h2>Monthly SIP (Tax &amp; Inflation)</h2>
+        <div class="calc-wrapper">
+          <!-- Inputs -->
+          <div class="inputs-container">
+            <div>
+              <label for="monthlySIP">Monthly SIP</label>
+              <input type="number" id="monthlySIP" placeholder="e.g. 10000" />
+            </div>
+
+            <!-- Monthly Term (Years) + Slider (1-100) -->
+            <div>
+              <label for="monthlyTerm">Term (Years)</label>
+              <input type="number" id="monthlyTerm" placeholder="e.g. 5"
+                     oninput="syncSliderYears('monthlyTermSlider','monthlyTerm')" />
+              <input type="range" id="monthlyTermSlider" min="1" max="100" step="1"
+                     oninput="syncInputYears('monthlyTermSlider','monthlyTerm')" />
+            </div>
+
+            <!-- Monthly SIP Interest Rate % + Slider -->
+            <div>
+              <label for="monthlySipInterest">Interest Rate (Annual %)</label>
+              <input type="number" step="0.01" id="monthlySipInterest" placeholder="e.g. 12"
+                     oninput="syncSliderPercent('monthlySipInterestSlider','monthlySipInterest')" />
+              <input type="range" id="monthlySipInterestSlider" min="0" max="100" step="0.01"
+                     oninput="syncInputPercent('monthlySipInterestSlider','monthlySipInterest')" />
+            </div>
+
+            <!-- Monthly LTCG Tax % + Slider -->
+            <div>
+              <label for="monthlyLtcgTax">Long Term Cap Gains Tax (%)</label>
+              <input type="number" step="0.01" id="monthlyLtcgTax" placeholder="e.g. 10"
+                     oninput="syncSliderPercent('monthlyLtcgTaxSlider','monthlyLtcgTax')" />
+              <input type="range" id="monthlyLtcgTaxSlider" min="0" max="100" step="0.01"
+                     oninput="syncInputPercent('monthlyLtcgTaxSlider','monthlyLtcgTax')" />
+            </div>
+
+            <!-- Monthly Inflation % + Slider -->
+            <div>
+              <label for="monthlyInflation">Inflation Rate (Annual %)</label>
+              <input type="number" step="0.01" id="monthlyInflation" placeholder="e.g. 5"
+                     oninput="syncSliderPercent('monthlyInflationSlider','monthlyInflation')" />
+              <input type="range" id="monthlyInflationSlider" min="0" max="100" step="0.01"
+                     oninput="syncInputPercent('monthlyInflationSlider','monthlyInflation')" />
+            </div>
+
+            <button class="calculate-btn" onclick="calculateMonthlySIP()">Calculate Monthly SIP</button>
+            <button class="reset-btn" onclick="resetMonthlySIP()">Reset</button>
+          </div>
+
+          <!-- Output -->
+          <div class="output-container">
+            <div class="result" id="monthlySipResult"></div>
+          </div>
+        </div>
+      </section>
+    </div> <!-- End .triangle-container -->
+    
+    <!-- ==================== CAR LOAN SECTION ==================== -->
+    <section class="financial-section" id="car-loan-section">
+      <h2>Car Loan Calculator</h2>
+      <div class="calc-wrapper">
+        <!-- Inputs -->
+        <div class="inputs-container">
+          <div>
+            <label for="carCost">Car Cost</label>
+            <input type="number" id="carCost" placeholder="e.g. 300000" />
+          </div>
+          <div>
+            <label for="carDownPayment">Down Payment</label>
+            <input type="number" id="carDownPayment" placeholder="e.g. 50000" oninput="updateCarDownPaymentState()" />
+          </div>
+          <div>
+            <label for="carInterest">Interest Rate (Annual %)</label>
+            <input type="number" step="0.01" id="carInterest" placeholder="e.g. 5" oninput="syncSliderPercent('carInterestSlider','carInterest')" />
+            <input type="range" id="carInterestSlider" min="0" max="100" step="0.01" oninput="syncInputPercent('carInterestSlider','carInterest')" />
+          </div>
+          <div>
+            <label for="carLoanTerm">Loan Period (Years)</label>
+            <input type="number" id="carLoanTerm" placeholder="e.g. 5" oninput="syncSliderYears('carLoanTermSlider','carLoanTerm')" />
+            <input type="range" id="carLoanTermSlider" min="1" max="10" step="1" oninput="syncInputYears('carLoanTermSlider','carLoanTerm')" />
+          </div>
+          <button class="calculate-btn" onclick="calculateCarLoan()">Calculate Car Loan</button>
+          <button class="reset-btn" onclick="resetCarLoan()">Reset</button>
+        </div>
+        <!-- Output -->
+        <div class="output-container">
+          <div class="result" id="carLoanResult"></div>
+        </div>
+      </div>
+    </section>
+
+  </div> <!-- End .financial-container -->
+
+  <!-- Disclaimer at the bottom -->
+  <div class="disclaimer" style="width: 60%; margin: 20px auto; text-align: center;">
+    <strong>Advisory Note:</strong> This Website is for <em>testing purposes only</em>
+    and should not be used for actual, real-life mortgage or SIP decisions.
+    The results are purely illustrative and may not account for all factors
+    relevant to your personal financial situation.
+  </div>
+
+  <!-- ========== SCRIPTS FOR SYNC + CALCULATIONS ========== -->
+  <script>
+    // ============================================================== 
+    //  HELPERS TO SYNC SLIDER AND INPUT FOR PERCENT & YEAR FIELDS 
+    // ==============================================================
+
+    // 1) PERCENTAGE FIELDS (0-100, step=0.01)
+    function syncInputPercent(sliderId, inputId) {
+      const slider = document.getElementById(sliderId);
+      const inputBox = document.getElementById(inputId);
+      inputBox.value = slider.value;
+    }
+    function syncSliderPercent(sliderId, inputId) {
+      const slider = document.getElementById(sliderId);
+      const inputBox = document.getElementById(inputId);
+      let val = parseFloat(inputBox.value);
+      if (isNaN(val)) { val = 0; }
+      if (val < 0) { val = 0; }
+      if (val > 100) { val = 100; }
+      inputBox.value = val;
+      slider.value = val;
+    }
+
+    // 2) YEAR FIELDS (1-100, step=1)
+    function syncInputYears(sliderId, inputId) {
+      const slider = document.getElementById(sliderId);
+      const inputBox = document.getElementById(inputId);
+      inputBox.value = slider.value;
+    }
+    function syncSliderYears(sliderId, inputId) {
+      const slider = document.getElementById(sliderId);
+      const inputBox = document.getElementById(inputId);
+      let val = parseInt(inputBox.value, 10);
+      if (isNaN(val) || val < 1) {
+        val = 1;
+      }
+      if (val > 100) {
+        val = 100;
+      }
+      inputBox.value = val;
+      slider.value = val;
+    }
+
+    // ============================================================== 
+    // (A) Update the Down Payment % field if user sets a manual down payment (for housing)
+    // ==============================================================
+    function updateDownPaymentPctState() {
+      const downPaymentOpt = parseFloat(document.getElementById('downPaymentOptional').value);
+      const housePctField = document.getElementById('housePct');
+      const housePctSlider = document.getElementById('housePctSlider');
+      if (!isNaN(downPaymentOpt) && downPaymentOpt > 0) {
+        housePctField.disabled = true;
+        housePctSlider.disabled = true;
+      } else {
+        housePctField.disabled = false;
+        housePctSlider.disabled = false;
+      }
+    }
+
+    // ============================================================== 
+    // (B) Auto-update the LumpSum SIP field if "Use rest as Lump Sum SIP?" is Yes.
+    // ==============================================================
+    function updateLumpsumField() {
+      const useRestVal = document.getElementById('useRestAsLumpSumSip').value;
+      const moneyAtHand = parseFloat(document.getElementById('moneyAtHand').value) || 0;
+      const downPaymentOpt = parseFloat(document.getElementById('downPaymentOptional').value) || 0;
+      const lumpsumField = document.getElementById('lumpsum');
+
+      if (useRestVal === 'Yes') {
+        let lumpsum = moneyAtHand - downPaymentOpt;
+        if (lumpsum < 0) lumpsum = 0;
+        lumpsumField.value = lumpsum.toFixed(2);
+        lumpsumField.disabled = true;
+      } else {
+        lumpsumField.disabled = false;
+      }
+    }
+
+    // ============================================================== 
+    // (C) Update Car Loan Down Payment state based on top input values.
+    // If "Down payment for car" > 0 and "Use rest as car down payment" is Yes, 
+    // disable the car loan down payment field and set its value accordingly.
+    // ==============================================================
+    function updateCarDownPaymentState() {
+      const topCarDP = parseFloat(document.getElementById('downPaymentForCar').value) || 0;
+      const useRestCarDP = document.getElementById('useRestAsCarDownPayment').value;
+      const carDPField = document.getElementById('carDownPayment');
+
+      if (topCarDP > 0 && useRestCarDP === 'Yes') {
+        carDPField.value = topCarDP.toFixed(2);
+        carDPField.disabled = true;
+      } else {
+        carDPField.disabled = false;
+      }
+    }
+
+    // ============================================================== 
+    // (D) "Submit" top inputs: (currently just an alert)
+    // ==============================================================
+    function submitTopInputs() {
+      alert("Top inputs submitted. Fields are now locked.");
+    }
+
+    // ============================================================== 
+    // 1. HOUSING CALCULATION
+    // ==============================================================
+    function calculateHousing() {
+      const houseCost = parseFloat(document.getElementById('houseCost').value) || 0;
+      const housePct = parseFloat(document.getElementById('housePct').value) || 0;
+      const annualInterest = parseFloat(document.getElementById('annualInterest').value) || 0;
+      const amortYears = parseFloat(document.getElementById('amortYears').value) || 0;
+      const moneyForDownPayment = parseFloat(document.getElementById('downPaymentOptional').value) || 0;
+      
+      // Use manual down payment if provided; otherwise use the percentage.
+      let downPayment = (moneyForDownPayment > 0) 
+                        ? moneyForDownPayment 
+                        : houseCost * (housePct / 100);
+
+      const loanAmount = houseCost - downPayment;
+      const monthlyInterest = annualInterest / 100 / 12;
+      const totalMonths = amortYears * 12;
+      let monthlyMortgage = 0;
+      if (monthlyInterest > 0) {
+        monthlyMortgage = 
+          loanAmount * (monthlyInterest * Math.pow(1 + monthlyInterest, totalMonths)) / 
+          (Math.pow(1 + monthlyInterest, totalMonths) - 1);
+      } else {
+        monthlyMortgage = loanAmount / totalMonths;
+      }
+      const overallMortgage = monthlyMortgage * totalMonths;
+      const overpaid = overallMortgage - loanAmount;
+      const overpaidByMonth = overpaid / totalMonths;
+
+      const resultText = `
+        <div>Down Payment: ${downPayment.toFixed(2)}</div>
+        <div>Loan Amount: ${loanAmount.toFixed(2)}</div>
+        <div>Monthly Mortgage: ${monthlyMortgage.toFixed(2)}</div>
+        <div>Overall Mortgage: ${overallMortgage.toFixed(2)}</div>
+        <div>Total Interest (Overpaid): ${overpaid.toFixed(2)}</div>
+        <div>Interest per Month: ${overpaidByMonth.toFixed(2)}</div>
+      `;
+      document.getElementById('housingResult').innerHTML = resultText;
+    }
+
+    function resetHousing() {
+      document.getElementById('houseCost').value = '';
+      document.getElementById('housePct').value = '';
+      document.getElementById('housePctSlider').value = 0;
+      document.getElementById('housePct').disabled = false;
+      document.getElementById('housePctSlider').disabled = false;
+      document.getElementById('annualInterest').value = '';
+      document.getElementById('annualInterestSlider').value = 0;
+      document.getElementById('amortYears').value = '';
+      document.getElementById('amortYearsSlider').value = 1;
+      document.getElementById('housingResult').innerHTML = '';
+      updateDownPaymentPctState();
+    }
+
+    // ============================================================== 
+    // 2. SIP LUMP SUM CALCULATION
+    // ==============================================================
+    function calculateLumpSumSIP() {
+      let lumpsum = parseFloat(document.getElementById('lumpsum').value) || 0;
+      const sipTerm = parseFloat(document.getElementById('sipTerm').value) || 0;
+      const sipInterest = parseFloat(document.getElementById('sipInterest').value) || 0;
+      const ltcgTax = parseFloat(document.getElementById('ltcgTax').value) || 0;
+      const inflation = parseFloat(document.getElementById('inflation').value) || 0;
+
+      const moneyAtHand = parseFloat(document.getElementById('moneyAtHand').value) || 0;
+      const moneyForDownPayment = parseFloat(document.getElementById('downPaymentOptional').value) || 0;
+      const houseCost = parseFloat(document.getElementById('houseCost').value) || 0;
+      const housePct = parseFloat(document.getElementById('housePct').value) || 0;
+
+      let actualDownPayment = (moneyForDownPayment > 0) 
+                              ? moneyForDownPayment 
+                              : houseCost * (housePct / 100);
+
+      // If "Yes," lumpsum = leftover money
+      if (document.getElementById('useRestAsLumpSumSip').value === 'Yes') {
+        let difference = moneyAtHand - actualDownPayment;
+        lumpsum = (difference > 0) ? difference : 0;
+        document.getElementById('lumpsum').value = lumpsum.toFixed(2);
+      }
+
+      const annualRate = sipInterest / 100;
+      const taxRate = ltcgTax / 100;
+      const inflationRate = inflation / 100;
+
+      const valuationEnd = lumpsum * Math.pow(1 + annualRate, sipTerm);
+      const profit = valuationEnd - lumpsum;
+      const valueAfterTax = lumpsum + (profit * (1 - taxRate));
+      const actualProfit = valueAfterTax - lumpsum;
+      let cagr = (lumpsum > 0 && sipTerm > 0)
+        ? Math.pow(valuationEnd / lumpsum, 1 / sipTerm) - 1
+        : 0;
+
+      const presentValue = valueAfterTax / Math.pow(1 + inflationRate, sipTerm);
+      const realRate = ((1 + cagr) / (1 + inflationRate)) - 1;
+
+      const resultText = `
+        <div>LumpSum SIP used: ${lumpsum.toFixed(2)}</div>
+        <div>Valuation at End: ${valuationEnd.toFixed(2)}</div>
+        <div>Profit: ${profit.toFixed(2)}</div>
+        <div>Value after Tax: ${valueAfterTax.toFixed(2)}</div>
+        <div>Actual Profit: ${actualProfit.toFixed(2)}</div>
+        <div>CAGR: ${(cagr * 100).toFixed(2)}%</div>
+        <div>Present Value (Inflation adjusted): ${presentValue.toFixed(2)}</div>
+        <div>Real Rate of Return: ${(realRate * 100).toFixed(2)}%</div>
+      `;
+      document.getElementById('lumpsumResult').innerHTML = resultText;
+    }
+
+    function resetLumpSumSIP() {
+      document.getElementById('lumpsum').value = '';
+      document.getElementById('lumpsum').disabled = false;
+      document.getElementById('sipTerm').value = '';
+      document.getElementById('sipTermSlider').value = 1;
+      document.getElementById('sipInterest').value = '';
+      document.getElementById('sipInterestSlider').value = 0;
+      document.getElementById('ltcgTax').value = '';
+      document.getElementById('ltcgTaxSlider').value = 0;
+      document.getElementById('inflation').value = '';
+      document.getElementById('inflationSlider').value = 0;
+      document.getElementById('lumpsumResult').innerHTML = '';
+    }
+
+    // ============================================================== 
+    // 3. MONTHLY SIP CALCULATION
+    // ==============================================================
+    function calculateMonthlySIP() {
+      const monthlySIP = parseFloat(document.getElementById('monthlySIP').value) || 0;
+      const monthlyTerm = parseFloat(document.getElementById('monthlyTerm').value) || 0;
+      const monthlySipInterest = parseFloat(document.getElementById('monthlySipInterest').value) || 0;
+      const monthlyLtcgTax = parseFloat(document.getElementById('monthlyLtcgTax').value) || 0;
+      const monthlyInflation = parseFloat(document.getElementById('monthlyInflation').value) || 0;
+
+      const annualRate = monthlySipInterest / 100;
+      const monthlyRate = annualRate / 12;
+      const taxRate = monthlyLtcgTax / 100;
+      const inflationRate = monthlyInflation / 100;
+      const n = monthlyTerm * 12;
+
+      const totalInvested = monthlySIP * n;
+      let valuationEnd = (monthlyRate > 0)
+        ? monthlySIP * ((Math.pow(1 + monthlyRate, n) - 1) / monthlyRate) * (1 + monthlyRate)
+        : totalInvested;
+      const profit = valuationEnd - totalInvested;
+      const valueAfterTax = totalInvested + (profit * (1 - taxRate));
+      const actualProfit = valueAfterTax - totalInvested;
+
+      // Approx. years for CAGR: subtract ~0.5 from total years due to monthly flow
+      const approximateYears = monthlyTerm - 0.5;
+      let cagr = (approximateYears > 0 && totalInvested > 0)
+        ? Math.pow(valueAfterTax / (totalInvested / 2), 1 / approximateYears) - 1
+        : 0;
+
+      const presentValue = valueAfterTax / Math.pow(1 + inflationRate, monthlyTerm);
+      const realRate = ((1 + cagr) / (1 + inflationRate)) - 1;
+
+      const resultText = `
+        <div>Total Money Invested: ${totalInvested.toFixed(2)}</div>
+        <div>Valuation at End: ${valuationEnd.toFixed(2)}</div>
+        <div>Profit: ${profit.toFixed(2)}</div>
+        <div>Value after Tax: ${valueAfterTax.toFixed(2)}</div>
+        <div>Actual Profit: ${actualProfit.toFixed(2)}</div>
+        <div>Approx. CAGR: ${(cagr * 100).toFixed(2)}%</div>
+        <div>Present Value (Inflation adjusted): ${presentValue.toFixed(2)}</div>
+        <div>Real Rate of Return: ${(realRate * 100).toFixed(2)}%</div>
+      `;
+      document.getElementById('monthlySipResult').innerHTML = resultText;
+    }
+
+    function resetMonthlySIP() {
+      document.getElementById('monthlySIP').value = '';
+      document.getElementById('monthlyTerm').value = '';
+      document.getElementById('monthlyTermSlider').value = 1;
+      document.getElementById('monthlySipInterest').value = '';
+      document.getElementById('monthlySipInterestSlider').value = 0;
+      document.getElementById('monthlyLtcgTax').value = '';
+      document.getElementById('monthlyLtcgTaxSlider').value = 0;
+      document.getElementById('monthlyInflation').value = '';
+      document.getElementById('monthlyInflationSlider').value = 0;
+      document.getElementById('monthlySipResult').innerHTML = '';
+    }
+
+    // ============================================================== 
+    // 4. CAR LOAN CALCULATION
+    // ==============================================================
+    function calculateCarLoan() {
+      const carCost = parseFloat(document.getElementById('carCost').value) || 0;
+      // Ensure the car down payment field reflects the top value if applicable.
+      updateCarDownPaymentState();
+      const carDownPayment = parseFloat(document.getElementById('carDownPayment').value) || 0;
+      const carInterest = parseFloat(document.getElementById('carInterest').value) || 0;
+      const carLoanTerm = parseFloat(document.getElementById('carLoanTerm').value) || 0;
+      
+      const loanAmount = carCost - carDownPayment;
+      const monthlyInterest = carInterest / 100 / 12;
+      const totalMonths = carLoanTerm * 12;
+      let monthlyPayment = 0;
+      if (monthlyInterest > 0) {
+        monthlyPayment = loanAmount * (monthlyInterest * Math.pow(1 + monthlyInterest, totalMonths)) /
+                         (Math.pow(1 + monthlyInterest, totalMonths) - 1);
+      } else {
+        monthlyPayment = loanAmount / totalMonths;
+      }
+      const overallPayment = monthlyPayment * totalMonths;
+      const totalInterest = overallPayment - loanAmount;
+      const interestPerMonth = totalInterest / totalMonths;
+      
+      const resultText = `
+        <div>Down Payment: ${carDownPayment.toFixed(2)}</div>
+        <div>Loan Amount: ${loanAmount.toFixed(2)}</div>
+        <div>Monthly Payment: ${monthlyPayment.toFixed(2)}</div>
+        <div>Overall Payment: ${overallPayment.toFixed(2)}</div>
+        <div>Total Interest: ${totalInterest.toFixed(2)}</div>
+        <div>Interest per Month: ${interestPerMonth.toFixed(2)}</div>
+      `;
+      document.getElementById('carLoanResult').innerHTML = resultText;
+    }
+
+    function resetCarLoan() {
+      document.getElementById('carCost').value = '';
+      document.getElementById('carDownPayment').value = '';
+      document.getElementById('carDownPayment').disabled = false;
+      document.getElementById('carInterest').value = '';
+      document.getElementById('carInterestSlider').value = 0;
+      document.getElementById('carLoanTerm').value = '';
+      document.getElementById('carLoanTermSlider').value = 1;
+      document.getElementById('carLoanResult').innerHTML = '';
+    }
+
+    // ============================================================== 
+    // RESET ALL: re-enable top fields and clear all inputs/results.
+    // ==============================================================
+    function resetAll() {
+      document.getElementById('moneyAtHand').value = '';
+      document.getElementById('moneyAtHand').disabled = false;
+      document.getElementById('downPaymentOptional').value = '';
+      document.getElementById('downPaymentOptional').disabled = false;
+      document.getElementById('useRestAsLumpSumSip').value = 'No';
+      document.getElementById('useRestAsLumpSumSip').disabled = false;
+      
+      // Reset new car top fields
+      document.getElementById('downPaymentForCar').value = '';
+      document.getElementById('downPaymentForCar').disabled = false;
+      document.getElementById('useRestAsCarDownPayment').value = 'No';
+      document.getElementById('useRestAsCarDownPayment').disabled = false;
+      
+      resetHousing();
+      resetLumpSumSIP();
+      resetMonthlySIP();
+      resetCarLoan();
+      updateLumpsumField();
+    }
+  </script>
+</body>
+</html>
