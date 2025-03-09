@@ -1,5 +1,6 @@
 import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+import { Platform, Image, View, Text, TouchableOpacity } from 'react-native';
+import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
@@ -8,9 +9,29 @@ import HomeScreen from './screens/HomeScreen';
 import MortgageScreen from './screens/MortgageScreen';
 import SIPScreen from './screens/SIPScreen';
 import CarLoanScreen from './screens/CarLoanScreen';
-import ShippingScreen from './screens/ShippingScreen';
 
 const Tab = createBottomTabNavigator();
+
+const HEADER_HEIGHT = Platform.OS === 'ios' ? 44 : 56;
+
+const HeaderLeft = () => {
+  const navigation = useNavigation();
+  
+  return (
+    <TouchableOpacity onPress={() => navigation.navigate('Home')}>
+      <Image
+        style={{
+          height: HEADER_HEIGHT,
+          width: HEADER_HEIGHT * 2,
+          resizeMode: 'contain',
+          marginLeft: 10,
+          marginVertical: -8,
+        }}
+        source={require('./assets/logo.png')}
+      />
+    </TouchableOpacity>
+  );
+};
 
 export default function App() {
   return (
@@ -33,9 +54,6 @@ export default function App() {
               case 'Car Loan':
                 iconName = 'directions-car';
                 break;
-              case 'Shipping':
-                iconName = 'local-shipping';
-                break;
               default:
                 iconName = 'circle';
             }
@@ -51,13 +69,41 @@ export default function App() {
           headerTitleStyle: {
             fontWeight: 'bold',
           },
+          headerLeft: () => <HeaderLeft />,
+          headerTitleAlign: 'center',
+          headerLeftContainerStyle: {
+            paddingLeft: 0,
+          },
         })}
       >
-        <Tab.Screen name="Home" component={HomeScreen} />
-        <Tab.Screen name="Mortgage" component={MortgageScreen} />
-        <Tab.Screen name="SIP" component={SIPScreen} />
-        <Tab.Screen name="Car Loan" component={CarLoanScreen} />
-        <Tab.Screen name="Shipping" component={ShippingScreen} />
+        <Tab.Screen 
+          name="Home" 
+          component={HomeScreen}
+          options={{
+            title: 'Home'
+          }}
+        />
+        <Tab.Screen 
+          name="Mortgage" 
+          component={MortgageScreen}
+          options={{
+            title: 'Mortgage Calculator'
+          }}
+        />
+        <Tab.Screen 
+          name="SIP" 
+          component={SIPScreen}
+          options={{
+            title: 'SIP Calculator'
+          }}
+        />
+        <Tab.Screen 
+          name="Car Loan" 
+          component={CarLoanScreen}
+          options={{
+            title: 'Car Loan Calculator'
+          }}
+        />
       </Tab.Navigator>
     </NavigationContainer>
   );

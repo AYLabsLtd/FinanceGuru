@@ -3,6 +3,7 @@ import { ScrollView, View, StyleSheet, Text } from 'react-native';
 import CustomInput from '../components/CustomInput';
 import CustomButton from '../components/CustomButton';
 import ResultsDisplay from '../components/ResultsDisplay';
+import AdvisoryText from '../components/AdvisoryText';
 
 const SIPScreen = () => {
   // Lump Sum SIP States
@@ -126,7 +127,7 @@ const SIPScreen = () => {
             label="Lump Sum Amount"
             value={lumpsum}
             onChangeText={setLumpsum}
-            placeholder="e.g. 100000"
+            placeholder="e.g. $100,000"
           />
 
           <CustomInput
@@ -197,7 +198,7 @@ const SIPScreen = () => {
             label="Monthly Investment"
             value={monthlySIP}
             onChangeText={setMonthlySIP}
-            placeholder="e.g. 10000"
+            placeholder="e.g. $10,000"
           />
 
           <CustomInput
@@ -259,6 +260,11 @@ const SIPScreen = () => {
 
           <ResultsDisplay results={monthlyResults} />
         </View>
+
+        {/* Advisory at the end of content */}
+        <View style={styles.advisoryContainer}>
+          <AdvisoryText />
+        </View>
       </View>
     </ScrollView>
   );
@@ -267,7 +273,7 @@ const SIPScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f7fa',
+    backgroundColor: '#fff',
   },
   content: {
     padding: 20,
@@ -291,6 +297,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginTop: 20,
+    marginBottom: 20,
+  },
+  advisoryContainer: {
+    marginTop: 10,
     marginBottom: 20,
   },
 });

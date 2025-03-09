@@ -3,6 +3,7 @@ import { ScrollView, View, StyleSheet } from 'react-native';
 import CustomInput from '../components/CustomInput';
 import CustomButton from '../components/CustomButton';
 import ResultsDisplay from '../components/ResultsDisplay';
+import AdvisoryText from '../components/AdvisoryText';
 
 const MortgageScreen = () => {
   const [moneyAtHand, setMoneyAtHand] = useState('');
@@ -63,86 +64,92 @@ const MortgageScreen = () => {
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.content}>
-        <CustomInput
-          label="Money at Hand"
-          value={moneyAtHand}
-          onChangeText={setMoneyAtHand}
-          placeholder="e.g. 100000"
-        />
-
-        <CustomInput
-          label="Money for Down Payment (Optional)"
-          value={downPaymentOptional}
-          onChangeText={setDownPaymentOptional}
-          placeholder="e.g. 20000"
-        />
-
-        <CustomInput
-          label="House Cost"
-          value={houseCost}
-          onChangeText={setHouseCost}
-          placeholder="e.g. 5000000"
-        />
-
-        <CustomInput
-          label="Down Payment %"
-          value={housePct}
-          onChangeText={setHousePct}
-          placeholder="e.g. 20"
-          isSlider={true}
-          minValue={0}
-          maxValue={100}
-          step={0.1}
-          disabled={downPaymentOptional !== ''}
-        />
-
-        <CustomInput
-          label="Interest Rate (Annual %)"
-          value={annualInterest}
-          onChangeText={setAnnualInterest}
-          placeholder="e.g. 7.5"
-          isSlider={true}
-          minValue={0}
-          maxValue={20}
-          step={0.1}
-        />
-
-        <CustomInput
-          label="Amortization Period (Years)"
-          value={amortYears}
-          onChangeText={setAmortYears}
-          placeholder="e.g. 20"
-          isSlider={true}
-          minValue={1}
-          maxValue={30}
-          step={1}
-        />
-
-        <View style={styles.buttonContainer}>
-          <CustomButton
-            title="Calculate Mortgage"
-            onPress={calculateMortgage}
-            type="primary"
+    <View style={styles.container}>
+      <ScrollView style={styles.scrollView}>
+        <View style={styles.content}>
+          <CustomInput
+            label="Money at Hand"
+            value={moneyAtHand}
+            onChangeText={setMoneyAtHand}
+            placeholder="e.g. $100,000"
           />
-          <CustomButton
-            title="Reset"
-            onPress={resetForm}
-            type="reset"
+
+          <CustomInput
+            label="Money for Down Payment"
+            value={downPaymentOptional}
+            onChangeText={setDownPaymentOptional}
+            placeholder="e.g. $20,000"
           />
+
+          <CustomInput
+            label="House Cost"
+            value={houseCost}
+            onChangeText={setHouseCost}
+            placeholder="e.g. $500,000"
+          />
+
+          <CustomInput
+            label="Down Payment %"
+            value={housePct}
+            onChangeText={setHousePct}
+            placeholder="e.g. 20"
+            isSlider={true}
+            minValue={0}
+            maxValue={100}
+            step={0.1}
+            disabled={downPaymentOptional !== ''}
+          />
+
+          <CustomInput
+            label="Interest Rate (Annual %)"
+            value={annualInterest}
+            onChangeText={setAnnualInterest}
+            placeholder="e.g. 7.5"
+            isSlider={true}
+            minValue={0}
+            maxValue={20}
+            step={0.1}
+          />
+
+          <CustomInput
+            label="Amortization Period (Years)"
+            value={amortYears}
+            onChangeText={setAmortYears}
+            placeholder="e.g. 20"
+            isSlider={true}
+            minValue={1}
+            maxValue={30}
+            step={1}
+          />
+
+          <View style={styles.buttonContainer}>
+            <CustomButton
+              title="Calculate Mortgage"
+              onPress={calculateMortgage}
+              type="primary"
+            />
+            <CustomButton
+              title="Reset"
+              onPress={resetForm}
+              type="reset"
+            />
+          </View>
+
+          <ResultsDisplay results={results} />
         </View>
-
-        <ResultsDisplay results={results} />
-      </View>
-    </ScrollView>
+      </ScrollView>
+      <AdvisoryText />
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f7fa',
+    backgroundColor: '#fff',
+  },
+  scrollView: {
+    flex: 1,
   },
   content: {
     padding: 20,
