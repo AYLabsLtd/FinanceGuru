@@ -2,8 +2,8 @@
   "name": "financeguru",
   "license": "0BSD",
   "version": "1.0.0",
-  "homepage": "https://finance-guru.ca",
-  "main": "index.js",
+  "homepage": "https://aylabsltd.github.io/FinanceGuru",
+  "main": "index.web.js",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
