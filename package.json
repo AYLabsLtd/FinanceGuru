@@ -1,50 +1,37 @@
 {
-  "name": "finance-guru",
+  "name": "financeguru",
   "license": "0BSD",
   "version": "1.0.0",
+  "homepage": "https://finance-guru.ca",
   "main": "index.js",
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
+    "predeploy": "expo export:web",
+    "deploy": "gh-pages -d web-build"
   },
   "dependencies": {
     "@expo/metro-runtime": "~4.0.1",
-    "@react-native-community/slider": "^4.4.2",
-    "@react-navigation/bottom-tabs": "^6.5.8",
-    "@react-navigation/native": "^6.1.7",
+    "@react-native-community/slider": "^4.5.6",
+    "@react-navigation/bottom-tabs": "^7.2.1",
+    "@react-navigation/native": "^7.0.15",
     "expo": "~52.0.37",
     "expo-status-bar": "~2.0.1",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
-    "react-native": "0.72.4",
+    "react": "18.3.1",
+    "react-dom": "^18.3.1",
+    "react-native": "0.76.7",
     "react-native-safe-area-context": "^5.3.0",
     "react-native-screens": "^4.9.1",
-    "react-native-vector-icons": "^10.0.0",
-    "react-native-web": "~0.19.6",
-    "react-scripts": "5.0.1"
+    "react-native-vector-icons": "^10.2.0",
+    "react-native-web": "^0.19.13"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
     "@babel/plugin-proposal-export-namespace-from": "^7.18.9",
     "babel-plugin-react-native-web": "^0.19.13",
-    "gh-pages": "^5.0.0"
+    "gh-pages": "^6.3.0"
   },
-  "private": true,
-  "homepage": "https://finance-guru.ca",
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  }
+  "private": true
 }
