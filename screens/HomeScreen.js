@@ -10,6 +10,13 @@ const HomeScreen = () => {
         <Text style={styles.description}>
           Your comprehensive financial planning companion that helps you make informed decisions about loans, investments, and financial goals.
         </Text>
+        <Text style={styles.description}>
+        For an introduction call or deeper dive into your financial future, please book some time on{' '}
+        <Text style={styles.link} onPress={() => Linking.openURL('https://calendly.com/aylabsltd')}>
+          https://calendly.com/aylabsltd
+        </Text>
+        , introduction call is free of charge but Interac of $25 (aylabsltd@gmail.com) is needed to confirm booking for advance discussion and getting fully tailored to your needs experience. In your Interac message, include the email you used to book the meeting.
+        </Text>
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Mortgage Calculator</Text>
